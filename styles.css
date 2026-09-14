@@ -26,10 +26,11 @@
   --panel: #ffffff;
   --future: #fafafa;
   --today: #f3f3f3;
-  --label-w: 84px;
-  --head-h: 58px;
-  --month-h: 18px;
-  --foot-h: 34px;
+  --fs: 17px;
+  --label-w: 104px;
+  --head-h: 68px;
+  --month-h: 24px;
+  --foot-h: 38px;
   --rows: 8;
   --cell: calc((100dvh - var(--head-h) - var(--foot-h)) / var(--rows));
 }
@@ -41,7 +42,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "ABC Areal Semi Mono", ui-monospace, Menlo, monospace;
-  font-size: 12px;
+  font-size: var(--fs);
 }
 
 body {
@@ -104,7 +105,7 @@ button {
   left: var(--label-w);
   padding-right: 8px;
   background: var(--panel);
-  font-size: 12px;
+  font-size: var(--fs);
   letter-spacing: 0.04em;
   color: var(--text);
   white-space: nowrap;
@@ -138,7 +139,7 @@ button {
   align-items: center;
   justify-content: center;
   background: var(--panel);
-  font-size: 12px;
+  font-size: var(--fs);
   line-height: 1.15;
   color: var(--muted);
   user-select: none;
@@ -146,7 +147,7 @@ button {
 
 .date .day-number {
   margin-top: 2px;
-  font-size: 12px;
+  font-size: var(--fs);
   color: var(--text);
 }
 
@@ -173,7 +174,7 @@ button {
   align-items: center;
   padding: 0 9px;
   background: var(--panel);
-  font-size: 12px;
+  font-size: var(--fs);
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
@@ -265,7 +266,7 @@ button {
   z-index: 3;
   transform: translate(-50%, -50%);
   color: #111;
-  font-size: 12px;
+  font-size: var(--fs);
   font-weight: 700;
   letter-spacing: -1px;
   white-space: nowrap;
@@ -312,7 +313,7 @@ button {
   flex: 0 0 auto;
   padding: 0 10px;
   border-top: 1px solid var(--border);
-  font-size: 12px;
+  font-size: var(--fs);
   color: var(--muted);
 }
 
@@ -321,7 +322,7 @@ button {
   border-radius: 999px;
   background: transparent;
   color: var(--text);
-  font-size: 12px;
+  font-size: var(--fs);
   padding: 3px 10px;
   cursor: pointer;
 }
@@ -409,7 +410,11 @@ button {
 
 @media (min-width: 700px) {
   :root {
+    --fs: 12px;
     --label-w: 112px;
+    --head-h: 58px;
+    --month-h: 18px;
+    --foot-h: 34px;
   }
 
   .habit-label {
