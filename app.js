@@ -6,14 +6,14 @@
   const todayButton = document.getElementById("todayButton");
 
   const habits = [
-    ["Move", "#FFD534"],
-    ["Cook", "#FF7A59"],
-    ["Read", "#6BCB83"],
-    ["Write", "#EF6BA8"],
-    ["Stretch", "#9C7BE8"],
-    ["Outside", "#70A9F3"],
-    ["Practice", "#F19A45"],
-    ["Sleep", "#E9A0A0"]
+    ["Move", "#FF3800"],
+    ["Cook", "#EFAE05"],
+    ["Read", "#4FC1F0"],
+    ["Write", "#E23AB0"],
+    ["Stretch", "#A539A7"],
+    ["Outside", "#76FB6F"],
+    ["Practice", "#FFFC58"],
+    ["Sleep", "#E9CCE8"]
   ];
 
   const faces = ["•ᴗ•", "^ᴗ^", "•◡•", "˘ᴗ˘", "•o•", "•⌣•", "^‿^", "•‿•"];
@@ -39,6 +39,7 @@
 
   const todayIndex = dates.findIndex((d) => sameDay(d, today));
 
+  document.documentElement.style.setProperty("--rows", String(habits.length));
   grid.style.gridTemplateColumns = `var(--label-w) repeat(${dates.length}, var(--cell))`;
   grid.style.gridTemplateRows = `var(--head-h) repeat(${habits.length}, var(--cell))`;
 
@@ -222,28 +223,40 @@
     meta.textContent = `Today · ${count} / ${habits.length}`;
   }
 
+  // Cell size is derived from viewport height in CSS, so measure it rather than
+  // parsing the custom property (which resolves to an unevaluated calc()).
+  function cellWidth() {
+    const probe = grid.querySelector(".date");
+    const width = probe ? probe.getBoundingClientRect().width : 0;
+    return width || 46;
+  }
+
+  let leftColumn = 0;
+  let scrollQueued = false;
+
   function scrollToToday(smooth = false) {
-    const styles = getComputedStyle(document.documentElement);
-    const cell = parseFloat(styles.getPropertyValue("--cell")) || 46;
-    const labelWidth = parseFloat(styles.getPropertyValue("--label-w")) || 86;
-
-    // Put today slightly right of center so recent history is immediately visible.
-    const visibleWidth = scroller.clientWidth;
-    const target =
-      labelWidth +
-      todayIndex * cell -
-      Math.max(cell * 3.5, visibleWidth * 0.58);
-
+    // Today sits flush against the sticky label column: the first date you see.
+    leftColumn = todayIndex;
     scroller.scrollTo({
-      left: Math.max(0, target),
+      left: todayIndex * cellWidth(),
       behavior: smooth ? "smooth" : "auto"
     });
   }
 
+  scroller.addEventListener("scroll", () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => {
+      leftColumn = Math.round(scroller.scrollLeft / cellWidth());
+      scrollQueued = false;
+    });
+  });
+
   todayButton.addEventListener("click", () => scrollToToday(true));
 
   window.addEventListener("resize", () => {
-    // Preserve the user's manual scroll position on resize rather than snapping.
+    // Cell size changes with viewport height, so hold the same leftmost day.
+    scroller.scrollTo({ left: leftColumn * cellWidth(), behavior: "auto" });
   });
 
   updateMeta();
