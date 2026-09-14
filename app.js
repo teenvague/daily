@@ -92,8 +92,13 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...state]));
   }
 
+  function channels(hex) {
+    return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(", ");
+  }
+
   function buildFlower(face) {
     return `
+      <span class="glow" aria-hidden="true"></span>
       <span class="flower-wrap" aria-hidden="true">
         <span class="flower">
           <span class="petal p1"></span>
@@ -172,6 +177,7 @@
         (monthStart ? " month-start" : "");
 
       cell.style.setProperty("--habit", habitColor);
+      cell.style.setProperty("--habit-rgb", channels(habitColor));
 
       // A real checkbox, not a button: Safari gives `switch` inputs their own
       // Taptic tick, and tapping the input is the only way to reach it.

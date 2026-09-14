@@ -295,15 +295,31 @@ button {
   white-space: nowrap;
 }
 
-.wash {
+.glow {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 30.4%;
-  height: 30.4%;
+  width: var(--cell);
+  height: var(--cell);
   border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(var(--habit-rgb), 0.95),
+    rgba(var(--habit-rgb), 0.55) 45%,
+    rgba(var(--habit-rgb), 0) 100%
+  );
+  transform: translate(-50%, -50%) scale(.25);
+  opacity: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* The cell resolves to flat color underneath the flower, rather than a
+   circle opening out of it. */
+.wash {
+  position: absolute;
+  inset: 0;
   background: var(--habit);
-  transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   z-index: 15;
   pointer-events: none;
@@ -314,9 +330,11 @@ button {
 }
 
 .cell.animating .flower-wrap {
-  animation:
-    flowerPop 720ms cubic-bezier(.16, 1.25, .3, 1) forwards,
-    flowerGlow 720ms cubic-bezier(.16, 1.25, .3, 1) forwards;
+  animation: flowerPop 720ms cubic-bezier(.16, 1.25, .3, 1) forwards;
+}
+
+.cell.animating .glow {
+  animation: glowPulse 820ms cubic-bezier(.2, .7, .3, 1) forwards;
 }
 
 .cell.animating .flower {
@@ -324,7 +342,7 @@ button {
 }
 
 .cell.animating .wash {
-  animation: washFill 420ms 580ms cubic-bezier(.65, 0, .2, 1) forwards;
+  animation: washFill 320ms 440ms linear forwards;
 }
 
 .footer {
@@ -398,18 +416,30 @@ button {
   }
 }
 
-@keyframes flowerGlow {
+/* Safari drops animated drop-shadow(), and is unreliable reading custom
+   properties inside keyframes. This animates only opacity and transform,
+   with the color sitting in a static gradient that fades to its own hue
+   rather than to transparent black. */
+@keyframes glowPulse {
   0% {
-    filter: drop-shadow(0 0 0 var(--habit));
+    transform: translate(-50%, -50%) scale(.3);
+    opacity: 0;
   }
-  28% {
-    filter: drop-shadow(0 0 10px var(--habit)) drop-shadow(0 0 24px var(--habit));
+  18% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: .95;
   }
-  66% {
-    filter: drop-shadow(0 0 7px var(--habit)) drop-shadow(0 0 18px var(--habit));
+  55% {
+    transform: translate(-50%, -50%) scale(1.7);
+    opacity: .8;
+  }
+  78% {
+    transform: translate(-50%, -50%) scale(1.85);
+    opacity: .45;
   }
   100% {
-    filter: drop-shadow(0 0 0 var(--habit));
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
   }
 }
 
@@ -421,12 +451,10 @@ button {
 }
 
 @keyframes washFill {
-  0% {
-    transform: translate(-50%, -50%) scale(.2);
-    opacity: 1;
+  from {
+    opacity: 0;
   }
-  100% {
-    transform: translate(-50%, -50%) scale(7);
+  to {
     opacity: 1;
   }
 }
@@ -452,6 +480,7 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .cell.animating .flower-wrap,
   .cell.animating .flower,
+  .cell.animating .glow,
   .cell.animating .wash {
     animation: none;
   }
