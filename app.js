@@ -7,14 +7,14 @@
   const todayButton = document.getElementById("todayButton");
 
   const habits = [
-    ["Move", "#FF3800"],
-    ["Cook", "#EFAE05"],
-    ["Read", "#4FC1F0"],
-    ["Write", "#E23AB0"],
-    ["Stretch", "#A539A7"],
-    ["Outside", "#76FB6F"],
-    ["Practice", "#FFFC58"],
-    ["Sleep", "#E9CCE8"]
+    ["Water", "#FF3800"],
+    ["Exercise", "#EFAE05"],
+    ["Sleep 8hr", "#4FC1F0"],
+    ["Cook", "#E23AB0"],
+    ["Read", "#A539A7"],
+    ["Write", "#76FB6F"],
+    ["Media", "#FFFC58"],
+    ["Social", "#E9CCE8"]
   ];
 
   const faces = ["•ᴗ•", "^ᴗ^", "•◡•", "˘ᴗ˘", "•o•", "•⌣•", "^‿^", "•‿•"];
@@ -300,6 +300,35 @@
     // Cell size changes with viewport height, so hold the same leftmost day.
     scroller.scrollTo({ left: leftColumn * cellWidth(), behavior: "auto" });
   });
+
+  // The label column is as wide as its longest name, measured in the real
+  // font at the current size rather than guessed.
+  function fitLabelColumn() {
+    const probe = document.createElement("div");
+    probe.className = "habit-label";
+    probe.style.cssText =
+      "position:absolute;left:-9999px;top:0;visibility:hidden;width:auto;";
+    grid.appendChild(probe);
+
+    let widest = 0;
+    habits.forEach(([habitName]) => {
+      probe.textContent = habitName;
+      widest = Math.max(widest, probe.offsetWidth);
+    });
+
+    grid.removeChild(probe);
+    document.documentElement.style.setProperty(
+      "--label-w",
+      `${Math.ceil(widest) + 2}px`
+    );
+  }
+
+  fitLabelColumn();
+  if (document.fonts && document.fonts.ready) {
+    // Remeasure once the real font is in: the fallback has different metrics.
+    document.fonts.ready.then(fitLabelColumn);
+  }
+  window.addEventListener("resize", fitLabelColumn);
 
   updateMeta();
   requestAnimationFrame(() => scrollToToday(false));
