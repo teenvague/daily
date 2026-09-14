@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Habits</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app" id="app">
+    <header class="toolbar">
+      <h1>Habits</h1>
+      <div class="meta" id="meta">Today · 0 / 8</div>
+    </header>
+
+    <section class="frame" aria-label="Habit tracker">
+      <div class="scroller" id="scroller">
+        <div class="grid" id="grid"></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <button class="today-button" id="todayButton" type="button">Today</button>
+      <span>Scroll horizontally for history →</span>
+    </footer>
+
+    <div class="sr-only" id="live" aria-live="polite"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
