@@ -1,5 +1,6 @@
 (() => {
   const grid = document.getElementById("grid");
+  const months = document.getElementById("months");
   const scroller = document.getElementById("scroller");
   const meta = document.getElementById("meta");
   const live = document.getElementById("live");
@@ -41,7 +42,7 @@
 
   document.documentElement.style.setProperty("--rows", String(habits.length));
   grid.style.gridTemplateColumns = `var(--label-w) repeat(${dates.length}, var(--cell))`;
-  grid.style.gridTemplateRows = `var(--head-h) repeat(${habits.length}, var(--cell))`;
+  grid.style.gridTemplateRows = `calc(var(--head-h) - var(--month-h)) repeat(${habits.length}, var(--cell))`;
 
   const state = loadState();
 
@@ -108,6 +109,25 @@
     `;
   }
 
+  // One band per month, as wide as that month's columns. The label inside is
+  // sticky, so it holds at the left edge and is pushed out by the next month.
+  let bandMonth = null;
+  let band = null;
+  dates.forEach((date) => {
+    const stamp = `${date.getFullYear()}-${date.getMonth()}`;
+    if (stamp !== bandMonth) {
+      bandMonth = stamp;
+      band = document.createElement("div");
+      band.className = "month-band";
+      band.dataset.days = "0";
+      band.innerHTML = `<span>${monthNames[date.getMonth()]}</span>`;
+      months.appendChild(band);
+    }
+    const days = Number(band.dataset.days) + 1;
+    band.dataset.days = String(days);
+    band.style.width = `calc(var(--cell) * ${days})`;
+  });
+
   const corner = document.createElement("div");
   corner.className = "corner";
   grid.appendChild(corner);
@@ -123,7 +143,6 @@
       (column === todayIndex ? " today" : "");
 
     el.innerHTML = `
-      ${monthStart ? `<span class="month">${monthNames[date.getMonth()]}</span>` : ""}
       <span>${weekday[date.getDay()]}</span>
       <span class="day-number">${date.getDate()}</span>
     `;
