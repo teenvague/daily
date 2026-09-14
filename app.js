@@ -163,46 +163,68 @@
       const storedKey = habitKey(habitIndex, date);
       const completed = state.has(storedKey);
 
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className =
+      const cell = document.createElement("label");
+      cell.className =
         "cell" +
         (completed ? " done" : "") +
         (column === todayIndex ? " today-cell" : "") +
         (future ? " future" : "") +
         (monthStart ? " month-start" : "");
 
-      button.style.setProperty("--habit", habitColor);
-      button.disabled = future;
-      button.innerHTML = buildFlower(faces[(habitIndex + column) % faces.length]);
+      cell.style.setProperty("--habit", habitColor);
 
-      setAriaLabel(button, habitName, date, completed, future);
+      // A real checkbox, not a button: Safari gives `switch` inputs their own
+      // Taptic tick, and tapping the input is the only way to reach it.
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.setAttribute("switch", "");
+      input.className = "cell-check";
+      input.checked = completed;
+      input.disabled = future;
 
-      button.addEventListener("click", () => {
-        toggleHabit(button, habitIndex, habitName, date);
+      cell.appendChild(input);
+      cell.insertAdjacentHTML("beforeend", buildFlower(faces[(habitIndex + column) % faces.length]));
+
+      setAriaLabel(input, habitName, date, completed, future);
+
+      input.addEventListener("change", () => {
+        toggleHabit(cell, input, habitIndex, habitName, date);
       });
 
-      grid.appendChild(button);
+      grid.appendChild(cell);
     });
   });
 
-  function setAriaLabel(button, habitName, date, completed, future = false) {
+  function setAriaLabel(input, habitName, date, completed, future = false) {
     let label = `${habitName}, ${readableDate(date)}`;
     if (completed) label += ", completed";
     if (future) label += ", future date";
-    button.setAttribute("aria-label", label);
+    input.setAttribute("aria-label", label);
   }
 
-  function toggleHabit(button, habitIndex, habitName, date) {
-    if (button.classList.contains("animating")) return;
+  // Android exposes the Vibration API; iOS never has, and gets its tick from
+  // the native switch control being toggled instead.
+  function tick() {
+    if (typeof navigator.vibrate !== "function") return;
+    try {
+      navigator.vibrate(12);
+    } catch {
+      /* no motor, or the browser refused */
+    }
+  }
 
+  function toggleHabit(cell, input, habitIndex, habitName, date) {
     const storedKey = habitKey(habitIndex, date);
-    const completed = state.has(storedKey);
 
-    if (completed) {
+    // A second tap mid-bloom cancels the first one's pending state changes.
+    if (cell.timers) cell.timers.forEach(clearTimeout);
+    cell.timers = [];
+    cell.classList.remove("animating");
+
+    if (!input.checked) {
       state.delete(storedKey);
-      button.classList.remove("done");
-      setAriaLabel(button, habitName, date, false);
+      cell.classList.remove("done");
+      setAriaLabel(input, habitName, date, false);
       live.textContent = `${habitName} marked incomplete for ${readableDate(date)}`;
       saveState();
       updateMeta();
@@ -211,27 +233,28 @@
 
     state.add(storedKey);
     saveState();
+    tick();
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      button.classList.add("done");
-      setAriaLabel(button, habitName, date, true);
+      cell.classList.add("done");
+      setAriaLabel(input, habitName, date, true);
       live.textContent = `${habitName} completed for ${readableDate(date)}`;
       updateMeta();
       return;
     }
 
-    button.classList.add("animating");
+    cell.classList.add("animating");
 
-    setTimeout(() => {
-      button.classList.add("done");
-    }, 820);
+    cell.timers.push(setTimeout(() => {
+      cell.classList.add("done");
+    }, 820));
 
-    setTimeout(() => {
-      button.classList.remove("animating");
-      setAriaLabel(button, habitName, date, true);
+    cell.timers.push(setTimeout(() => {
+      cell.classList.remove("animating");
+      setAriaLabel(input, habitName, date, true);
       live.textContent = `${habitName} completed for ${readableDate(date)}`;
       updateMeta();
-    }, 1050);
+    }, 1050));
   }
 
   function updateMeta() {

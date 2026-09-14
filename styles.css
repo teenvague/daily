@@ -193,11 +193,22 @@ button {
   isolation: isolate;
 }
 
-.cell:hover:not(:disabled):not(.done) {
+.cell-check {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 10;
+  cursor: inherit;
+}
+
+.cell:not(.future):not(.done):hover {
   background: #f8f8f8;
 }
 
-.cell:focus-visible {
+.cell:has(.cell-check:focus-visible) {
   outline: 2px solid var(--text);
   outline-offset: -3px;
   z-index: 50;
