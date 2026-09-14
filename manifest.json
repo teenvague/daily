@@ -1,0 +1,17 @@
+{
+  "name": "Daily Habits",
+  "short_name": "Daily",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7EED8",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "appletouchicon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -32,7 +32,14 @@
   --month-h: 24px;
   --foot-h: 38px;
   --rows: 8;
-  --cell: calc((100dvh - var(--head-h) - var(--foot-h)) / var(--rows));
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --cell: calc(
+    (100dvh - var(--safe-t) - var(--safe-b) - var(--head-h) - var(--foot-h)) /
+      var(--rows)
+  );
 }
 
 html,
@@ -58,6 +65,11 @@ button {
   flex-direction: column;
   width: 100%;
   height: 100dvh;
+  /* Installed to the Home Screen there is no browser chrome absorbing the
+     status bar or the home indicator, so the layout has to do it. */
+  padding-top: var(--safe-t);
+  padding-left: var(--safe-l);
+  padding-right: var(--safe-r);
 }
 
 .frame {
@@ -320,9 +332,9 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  height: var(--foot-h);
+  height: calc(var(--foot-h) + var(--safe-b));
   flex: 0 0 auto;
-  padding: 0 10px;
+  padding: 0 10px var(--safe-b);
   border-top: 1px solid var(--border);
   font-size: var(--fs);
   color: var(--muted);
