@@ -8,13 +8,13 @@
 
   const habits = [
     ["Water", "#FF3800"],
-    ["Exercise", "#EFAE05"],
-    ["Sleep 8hr", "#4FC1F0"],
-    ["Cook", "#E23AB0"],
-    ["Read", "#A539A7"],
-    ["Write", "#76FB6F"],
-    ["Media", "#FFFC58"],
-    ["Social", "#E9CCE8"]
+    ["Exercise", "#FFFC58"],
+    ["Sleep 8hr", "#E9CCE8"],
+    ["Cook", "#4FC1F0"],
+    ["Read", "#76FB6F"],
+    ["Write", "#E23AB0"],
+    ["Media", "#EBDF81"],
+    ["Social", "#27822C"]
   ];
 
   const faces = ["•ᴗ•", "^ᴗ^", "•◡•", "˘ᴗ˘", "•o•", "•⌣•", "^‿^", "•‿•"];
